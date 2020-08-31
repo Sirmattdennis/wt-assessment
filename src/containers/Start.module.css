@@ -1,0 +1,25 @@
+.Start {
+  color: #FFFFFF;
+  text-align: center;
+  margin: 100px 15px 0 15px;
+}
+
+.Start > img {
+  max-width: 100%;
+  animation-name: logo;
+  animation-duration: 2.5s;
+  animation-iteration-count: infinite;
+}
+
+@keyframes logo {
+  0%    {transform: rotateZ(-5deg);}
+  40%   {transform: rotateZ(5deg);}
+  50%   {transform: rotateZ(5deg);}
+  90%   {transform: rotateZ(-5deg);}
+  100%  {transform: rotateZ(-5deg);}
+}
+
+.Start > * {
+  margin-top: 0;
+  margin-bottom: 70px;
+}

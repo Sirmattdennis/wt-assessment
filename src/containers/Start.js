@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import Button from '../components/ui/Button';
+import ButtonLink from '../components/ui/ButtonLink';
 
 import styles from './Start.module.css';
 import '../global.css';
@@ -14,7 +14,7 @@ class Start extends Component {
         <h1 className="sr-only">The Name Game!</h1>
         <img src={logo} alt="The Name Game!" />
         <p>Try matching the WillowTree employee to their photo.</p>
-        <Button>Play!</Button>
+        <ButtonLink navTo="/play">Play!</ButtonLink>
       </div>
     );
   }

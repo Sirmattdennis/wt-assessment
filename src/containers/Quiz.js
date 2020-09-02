@@ -22,21 +22,23 @@ class Quiz extends Component {
     isComplete: false,
     items: [],
     quizData: [],
-    correctAnswer: null
+    correctAnswer: null,
+    selectedAnswer: null,
+    isAnsweredCorrect: null
   };
 
   componentDidMount() {
     axios.get("https://willowtreeapps.com/api/v1.0/profiles")
       .then(response => {
-        //console.log(response);
+        // Generate a new correct answer
         const newCorrectAnswer = this.pickNewAnswer();
         this.setState({
           isLoaded: true,
           items: response.data,
           correctAnswer: newCorrectAnswer
         });
+        // Create data for quiz and set in state
         this.setQuestionDataState();
-        console.log(this.state.quizData);
       })
       .catch(error => {
         this.setState({
@@ -44,12 +46,6 @@ class Quiz extends Component {
           error: true
         })
       });
-  }
-
-  shouldComponentUpdate(nextProps, nextState) {
-    if (nextState.isLocked) return true;
-
-    return true;
   }
 
   setQuestionDataState = () => {
@@ -104,7 +100,9 @@ class Quiz extends Component {
     this.setState({
       progress: newProgress,
       isLocked: false,
-      correctAnswer: newCorrectAnswer
+      correctAnswer: newCorrectAnswer,
+      selectedAnswer: null,
+      isAnsweredCorrect: null
     });
 
     if (this.state.progress >= NUMBER_OF_QUESTIONS - 1) {
@@ -112,13 +110,19 @@ class Quiz extends Component {
         isComplete: true
       })
     }
-
   }
 
   setFrozenStatusHandler = (val) => {
     this.setState({
       isLocked: val
     })
+  }
+
+  setSelectedHandler = (ans) => {
+    this.setState ({
+      selectedAnswer: ans,
+      isAnsweredCorrect: (this.state.correctAnswer === this.state.selectedAnswer)
+    });
   }
 
   addScoreHandler = () => {
@@ -152,8 +156,6 @@ class Quiz extends Component {
       );
     } else {
 
-      //console.log(quizData);
-
       quizDisplay = (
         this.state.quizData.map((questionData, index) => {
           return (
@@ -163,7 +165,10 @@ class Quiz extends Component {
               questionData={questionData}
               choiceCount={NUMBER_OF_CHOICES}
               correctAnswer={this.state.correctAnswer}
+              selectedAnswer={this.state.selectedAnswer}
               isFrozen={this.state.isLocked}
+              isCorrect={(this.state.correctAnswer === this.state.selectedAnswer)}
+              setSelected={this.setSelectedHandler}
               setFrozen={this.setFrozenStatusHandler}
               addScore={this.addScoreHandler}/>
           )

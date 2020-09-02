@@ -3,60 +3,10 @@ import AnswerItem from '../components/AnswerItem';
 
 import styles from './Question.module.css';
 
-// const choices = (
-//   this.props.choiceCount
-// )
-//
-// const question = (props) => (
-//   [...Array(this.props.choiceCount)].map((e, i) => (
-//     <div>Hello</div>
-//   )
-// );
-
-// const question = (props) => (
-//   this.props.questionData.map((item, index) => {
-//     return (
-//       <AnswerItem
-//         key={item.id}
-//         imgSrc={item.headshot.url}
-//         imgAlt={item.headshot.alt}
-//         clicked={() => this.imageClickedHandler(index)}
-//         isDisabled={this.props.isFrozen}
-//         isCorrectAnswer={this.state.isComplete && index === this.state.correctAnswerIndex}
-//         isChosenAnswer={this.state.selectedAnswer === index} />)
-//   });
-// );
-//
-// const correctAnswer = 3;
-
 class Question extends Component {
 
-  state = {
-    isComplete: false,
-    isAnsweredCorrect: null,
-    selectedAnswer: null,
-    correctAnswerIndex: Math.floor(Math.random() * this.props.questionData.length),
-    correctAnswerName: null
-  }
-
-  componentDidMount() {
-    // const correctAnswerIndex = (
-    //   //Math.floor(Math.random() * this.props.questionData.length)
-    //   //correctAnswer
-    // );
-
-    // const correctAnswerName = (
-    //   this.props.questionData[this.props.correctAnswer].firstName + " " + this.props.questionData[this.props.correctAnswer].lastName
-    // );
-    //
-    // this.setState({
-    //   //correctAnswerIndex: correctAnswerIndex,
-    //   correctAnswerName: correctAnswerName
-    // });
-  }
-
   shouldComponentUpdate(nextProps, nextState) {
-    if (nextProps.isFrozen) return true;
+    if (nextState.isComplete) return false;
       console.log("true");
     return true;
   }
@@ -64,16 +14,10 @@ class Question extends Component {
   imageClickedHandler = (tar) => {
     const isCorrect = (tar === this.props.correctAnswer);
 
-    this.setState({
-      isComplete: true,
-      isAnsweredCorrect: isCorrect,
-      selectedAnswer: tar
-    });
-
     this.props.setFrozen(true);
+    this.props.setSelected(tar);
 
     if (isCorrect) {
-      console.log("ding");
       this.props.addScore();
     }
   }
@@ -82,7 +26,6 @@ class Question extends Component {
 
     const answerName = (
       this.props.questionData[this.props.correctAnswer].firstName + ' ' + this.props.questionData[this.props.correctAnswer].lastName
-      //"Jimmers"
     )
 
     const choices = (
@@ -94,8 +37,8 @@ class Question extends Component {
             imgAlt={item.headshot.alt}
             clicked={() => this.imageClickedHandler(index)}
             isDisabled={this.props.isFrozen}
-            isCorrectAnswer={this.state.isComplete && index === this.props.correctAnswer}
-            isChosenAnswer={this.state.selectedAnswer === index} />
+            isCorrectAnswer={this.props.isFrozen && this.props.selectedAnswer === this.props.correctAnswer}
+            isChosenAnswer={this.props.selectedAnswer === index} />
         );
       })
     );

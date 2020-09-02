@@ -5,12 +5,6 @@ import styles from './Question.module.css';
 
 class Question extends Component {
 
-  shouldComponentUpdate(nextProps, nextState) {
-    if (nextState.isComplete) return false;
-      console.log("true");
-    return true;
-  }
-
   imageClickedHandler = (tar) => {
     const isCorrect = (tar === this.props.correctAnswer);
 

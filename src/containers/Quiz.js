@@ -31,6 +31,7 @@ class Quiz extends Component {
           items: response.data
         });
         this.setQuestionDataState();
+        console.log(this.state.quizData);
       })
       .catch(error => {
         this.setState({

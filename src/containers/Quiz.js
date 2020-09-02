@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 
 import Question from './Question';
+import Results from './Results';
 import Button from '../components/ui/Button';
 
 //import '../global.css';
@@ -13,22 +14,26 @@ const NUMBER_OF_CHOICES = 6;
 class Quiz extends Component {
 
   state = {
-    progress: 0,
-    score: 0,
     isLoaded: false,
     error: null,
-    isReady: false,
+    progress: 0,
+    score: 0,
+    isLocked: false,
+    isComplete: false,
     items: [],
-    quizData: []
+    quizData: [],
+    correctAnswer: null
   };
 
   componentDidMount() {
     axios.get("https://willowtreeapps.com/api/v1.0/profiles")
       .then(response => {
         //console.log(response);
+        const newCorrectAnswer = this.pickNewAnswer();
         this.setState({
           isLoaded: true,
-          items: response.data
+          items: response.data,
+          correctAnswer: newCorrectAnswer
         });
         this.setQuestionDataState();
         console.log(this.state.quizData);
@@ -39,6 +44,12 @@ class Quiz extends Component {
           error: true
         })
       });
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    if (nextState.isLocked) return true;
+
+    return true;
   }
 
   setQuestionDataState = () => {
@@ -81,21 +92,32 @@ class Quiz extends Component {
     return rtn;
   }
 
+  pickNewAnswer = () => {
+    return Math.floor(Math.random() * NUMBER_OF_CHOICES);
+  }
+
   continueClickedHandler = () => {
     const prevProgress = this.state.progress;
     const newProgress = prevProgress + 1;
+    const newCorrectAnswer = this.pickNewAnswer()
 
     this.setState({
       progress: newProgress,
-      isReady: false
+      isLocked: false,
+      correctAnswer: newCorrectAnswer
     });
 
-    if (this.state.progress >= NUMBER_OF_QUESTIONS - 1) this.props.history.push('/results');
+    if (this.state.progress >= NUMBER_OF_QUESTIONS - 1) {
+      this.setState({
+        isComplete: true
+      })
+    }
+
   }
 
-  setReadyStatusHandler = (val) => {
+  setFrozenStatusHandler = (val) => {
     this.setState({
-      isReady: val
+      isLocked: val
     })
   }
 
@@ -109,7 +131,7 @@ class Quiz extends Component {
   }
 
   render() {
-    const { error, isLoaded } = this.state;
+    const { error, isLoaded, isComplete } = this.state;
     let quizDisplay = null;
     let continueButton = null;
 
@@ -122,6 +144,12 @@ class Quiz extends Component {
       );
     } else if (!isLoaded) {
       quizDisplay = <div className="loader">Loading...</div>;
+    } else if (isComplete) {
+      quizDisplay = (
+        <Results
+          score={this.state.score}
+          scoreMax={NUMBER_OF_QUESTIONS} />
+      );
     } else {
 
       //console.log(quizData);
@@ -133,15 +161,18 @@ class Quiz extends Component {
               key={Math.floor(Math.random() * 10000000)}
               isHidden={index !== this.state.progress}
               questionData={questionData}
-              setReady={this.setReadyStatusHandler}
+              choiceCount={NUMBER_OF_CHOICES}
+              correctAnswer={this.state.correctAnswer}
+              isFrozen={this.state.isLocked}
+              setFrozen={this.setFrozenStatusHandler}
               addScore={this.addScoreHandler}/>
-          );
+          )
         })
       );
 
       continueButton = (
         <Button
-          isDisabled={!this.state.isReady}
+          isDisabled={!this.state.isLocked}
           clicked={this.continueClickedHandler}>
           Continue
         </Button>

@@ -17,7 +17,9 @@ class Quiz extends Component {
     score: 0,
     isLoaded: false,
     error: null,
-    items: []
+    isReady: false,
+    items: [],
+    quizData: []
   };
 
   componentDidMount() {
@@ -28,6 +30,7 @@ class Quiz extends Component {
           isLoaded: true,
           items: response.data
         });
+        this.setQuestionDataState();
       })
       .catch(error => {
         this.setState({
@@ -35,6 +38,20 @@ class Quiz extends Component {
           error: true
         })
       });
+  }
+
+  setQuestionDataState = () => {
+    const range = this.state.items.length;
+    const quizData = [];
+    let reservedItems = this.createReservedItems(range);
+
+    for (let i = 0; i < NUMBER_OF_QUESTIONS; i++) {
+      quizData.push(this.createQuestionData(this.state.items, reservedItems, i));
+    }
+
+    this.setState({
+      quizData: quizData
+    });
   }
 
   createReservedItems = (range) => {
@@ -63,9 +80,37 @@ class Quiz extends Component {
     return rtn;
   }
 
+  continueClickedHandler = () => {
+    const prevProgress = this.state.progress;
+    const newProgress = prevProgress + 1;
+
+    this.setState({
+      progress: newProgress,
+      isReady: false
+    });
+
+    if (this.state.progress >= NUMBER_OF_QUESTIONS - 1) this.props.history.push('/results');
+  }
+
+  setReadyStatusHandler = (val) => {
+    this.setState({
+      isReady: val
+    })
+  }
+
+  addScoreHandler = () => {
+    const prevScore = this.state.score;
+    const newScore = prevScore + 1;
+
+    this.setState({
+      score: newScore
+    });
+  }
+
   render() {
-    const { error, isLoaded, items } = this.state;
+    const { error, isLoaded } = this.state;
     let quizDisplay = null;
+    let continueButton = null;
 
     if (error) {
       quizDisplay = (
@@ -77,30 +122,37 @@ class Quiz extends Component {
     } else if (!isLoaded) {
       quizDisplay = <div className="loader">Loading...</div>;
     } else {
-      const range = items.length;
-      const quizData = [];
-      let reservedItems = this.createReservedItems(range);
-
-      for (let i = 0; i < NUMBER_OF_QUESTIONS; i++) {
-        quizData.push(this.createQuestionData(items, reservedItems, i));
-      }
 
       //console.log(quizData);
 
       quizDisplay = (
-        quizData.map((questionData, index) => {
+        this.state.quizData.map((questionData, index) => {
           return (
-            <React.Fragment key={Math.floor(Math.random() * 10000000)}>
-              <Question questionData={questionData} isActive={index === 0} />
-              <Button isDisabled={true} clicked={this.buttonClickedHandler}>Continue</Button>
-            </React.Fragment>
+            <Question
+              key={Math.floor(Math.random() * 10000000)}
+              isHidden={index !== this.state.progress}
+              questionData={questionData}
+              setReady={this.setReadyStatusHandler}
+              addScore={this.addScoreHandler}/>
           );
         })
       );
+
+      continueButton = (
+        <Button
+          isDisabled={!this.state.isReady}
+          clicked={this.continueClickedHandler}>
+          Continue
+        </Button>
+      );
+
     }
 
     return (
-      <div className={styles.Quiz}>{quizDisplay}</div>
+      <div className={styles.Quiz}>
+        {quizDisplay}
+        {continueButton}
+      </div>
     );
   }
 }

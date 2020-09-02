@@ -1,0 +1,26 @@
+.Question {
+  width: 100%;
+  max-width: 900px;
+  margin: auto;
+  text-align: center;
+  color: #223547;
+  background-color: #FFFFFF;
+}
+
+.Name {
+  font-weight: bold;
+  font-size: 40px;
+  line-height: 48px;
+}
+
+.Container {
+  display: flex;
+  flex-flow: wrap;
+  justify-content: center;
+}
+
+@media only screen and (max-width: 767px) {
+  .Question {
+    max-width: none;
+  }
+}

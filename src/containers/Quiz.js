@@ -1,7 +1,14 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 
+import Question from './Question';
+import Button from '../components/ui/Button';
+
 //import '../global.css';
+import styles from './Quiz.module.css';
+
+const NUMBER_OF_QUESTIONS = 5;
+const NUMBER_OF_CHOICES = 6;
 
 class Quiz extends Component {
 
@@ -16,7 +23,7 @@ class Quiz extends Component {
   componentDidMount() {
     axios.get("https://willowtreeapps.com/api/v1.0/profiles")
       .then(response => {
-        console.log(response);
+        //console.log(response);
         this.setState({
           isLoaded: true,
           items: response.data
@@ -28,23 +35,32 @@ class Quiz extends Component {
           error: true
         })
       });
+  }
 
-    /*fetch("https://willowtreeapps.com/api/v1.0/profiles")
-    .then(res => res.json())
-    .then(
-      (result) => {
-        this.setState({
-          isLoaded: true,
-          items: result.items
-        });
-      },
-      (error) => {
-        this.setState({
-          isLoaded: true,
-          error
-        });
-      }
-    )*/
+  createReservedItems = (range) => {
+    const totalPull = NUMBER_OF_CHOICES * NUMBER_OF_QUESTIONS;
+    let pool = new Set();
+    let rtn = [];
+
+    while (pool.size < totalPull) {
+      pool.add(Math.floor(Math.random() * range));
+    }
+
+    pool.forEach(item => {
+      rtn.push(item);
+    });
+
+    return rtn;
+  }
+
+  createQuestionData = (data, reservedItems, offset) => {
+    let rtn = [];
+
+    for (let i = offset; i < (NUMBER_OF_CHOICES * NUMBER_OF_QUESTIONS); i += NUMBER_OF_QUESTIONS) {
+      rtn.push(data[reservedItems[i]]);
+    }
+
+    return rtn;
   }
 
   render() {
@@ -61,19 +77,30 @@ class Quiz extends Component {
     } else if (!isLoaded) {
       quizDisplay = <div className="loader">Loading...</div>;
     } else {
+      const range = items.length;
+      const quizData = [];
+      let reservedItems = this.createReservedItems(range);
+
+      for (let i = 0; i < NUMBER_OF_QUESTIONS; i++) {
+        quizData.push(this.createQuestionData(items, reservedItems, i));
+      }
+
+      //console.log(quizData);
+
       quizDisplay = (
-        <ul>
-          {items.map(item => (
-            <li key={item.id}>
-              {item.firstName} {item.lastName}
-            </li>
-          ))}
-        </ul>
+        quizData.map((questionData, index) => {
+          return (
+            <React.Fragment key={Math.floor(Math.random() * 10000000)}>
+              <Question questionData={questionData} isActive={index === 0} />
+              <Button isDisabled={true} clicked={this.buttonClickedHandler}>Continue</Button>
+            </React.Fragment>
+          );
+        })
       );
     }
 
     return (
-      <div>{ quizDisplay }</div>
+      <div className={styles.Quiz}>{quizDisplay}</div>
     );
   }
 }

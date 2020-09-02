@@ -9,6 +9,7 @@ import logo from '../assets/title-home.svg';
 
 class Start extends Component {
   render() {
+    console.log("rendering splash...");
     return (
       <div className={styles.Start}>
         <h1 className="sr-only">The Name Game!</h1>

@@ -1,0 +1,33 @@
+.AnswerItem {
+  width: 260px;
+  height: 260px;
+  display: inline-block;
+  overflow: hidden;
+  margin: 20px;
+  background: #223547;
+  border: none;
+  padding: 0;
+  transition: .15s box-shadow;
+}
+
+.AnswerItem:hover {
+  cursor: pointer;
+}
+
+.AnswerItem:focus {
+  outline: 2px solid black;
+}
+
+.AnswerItem:hover,
+.AnswerItem:focus {
+  box-shadow: 0 0 20px rgba(0,0,0,0.25);
+}
+
+.AnswerItem > img {
+  width: 100%;
+    height: auto;
+    min-width: 0;
+    position: relative;
+    transform: translateX(-50%);
+    left: 50%;
+}

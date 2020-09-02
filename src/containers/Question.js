@@ -5,6 +5,7 @@ import styles from './Question.module.css';
 
 class Question extends Component {
 
+  // Check if answer is correct and run appropriate quiz handlers
   imageClickedHandler = (tar) => {
     const isCorrect = (tar === this.props.correctAnswer);
 
@@ -18,10 +19,12 @@ class Question extends Component {
 
   render() {
 
+    // Create answer name because I can
     const answerName = (
       this.props.questionData[this.props.correctAnswer].firstName + ' ' + this.props.questionData[this.props.correctAnswer].lastName
     )
 
+    // Populate question with available answer items
     const choices = (
       this.props.questionData.map((item, index) => {
         return(

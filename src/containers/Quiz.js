@@ -5,7 +5,6 @@ import Question from './Question';
 import Results from './Results';
 import Button from '../components/ui/Button';
 
-//import '../global.css';
 import styles from './Quiz.module.css';
 
 const NUMBER_OF_QUESTIONS = 5;
@@ -23,8 +22,7 @@ class Quiz extends Component {
     items: [],
     quizData: [],
     correctAnswer: null,
-    selectedAnswer: null,
-    isAnsweredCorrect: null
+    selectedAnswer: null
   };
 
   componentDidMount() {
@@ -48,6 +46,7 @@ class Quiz extends Component {
       });
   }
 
+  // Call in functions below to assemble an array of quiz data to set to state.
   setQuestionDataState = () => {
     const range = this.state.items.length;
     const quizData = [];
@@ -62,6 +61,8 @@ class Quiz extends Component {
     });
   }
 
+  // Create array of numbers to use as in-bound indexes to pull from main items array.
+  // Use set and while loop to ensure zero repeat items throughout quiz.
   createReservedItems = (range) => {
     const totalPull = NUMBER_OF_CHOICES * NUMBER_OF_QUESTIONS;
     let pool = new Set();
@@ -78,6 +79,8 @@ class Quiz extends Component {
     return rtn;
   }
 
+  // Create and return array of objects of a number of questions
+  // and choices per question matching Question/Choice amoung constants
   createQuestionData = (data, reservedItems, offset) => {
     let rtn = [];
 
@@ -88,10 +91,12 @@ class Quiz extends Component {
     return rtn;
   }
 
+  // Generate and return a random number to use to determine correct answer
   pickNewAnswer = () => {
     return Math.floor(Math.random() * NUMBER_OF_CHOICES);
   }
 
+  // State updates to progress to next question
   continueClickedHandler = () => {
     const prevProgress = this.state.progress;
     const newProgress = prevProgress + 1;
@@ -101,10 +106,10 @@ class Quiz extends Component {
       progress: newProgress,
       isLocked: false,
       correctAnswer: newCorrectAnswer,
-      selectedAnswer: null,
-      isAnsweredCorrect: null
+      selectedAnswer: null
     });
 
+    // If already at last question, set flag to proceed to results
     if (this.state.progress >= NUMBER_OF_QUESTIONS - 1) {
       this.setState({
         isComplete: true
@@ -112,19 +117,21 @@ class Quiz extends Component {
     }
   }
 
-  setFrozenStatusHandler = (val) => {
+  // Set isLocked in state
+  setLockedStatusHandler = (val) => {
     this.setState({
       isLocked: val
     })
   }
 
+  // Set selectedAnswer in state
   setSelectedHandler = (ans) => {
     this.setState ({
-      selectedAnswer: ans,
-      isAnsweredCorrect: (this.state.correctAnswer === this.state.selectedAnswer)
+      selectedAnswer: ans
     });
   }
 
+  // Increment score in state
   addScoreHandler = () => {
     const prevScore = this.state.score;
     const newScore = prevScore + 1;
@@ -169,7 +176,7 @@ class Quiz extends Component {
               isFrozen={this.state.isLocked}
               isCorrect={(this.state.correctAnswer === this.state.selectedAnswer)}
               setSelected={this.setSelectedHandler}
-              setFrozen={this.setFrozenStatusHandler}
+              setFrozen={this.setLockedStatusHandler}
               addScore={this.addScoreHandler}/>
           )
         })

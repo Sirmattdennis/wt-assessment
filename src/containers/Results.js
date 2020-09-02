@@ -38,7 +38,7 @@ const results = (props) => (
         <p>Incorrect Selections</p>
       </div>
       <div className={styles.Stat}>
-        <p>{props.averageTime}</p>
+        <p>{props.averageTime} sec</p>
         <p>Avg Selection Time</p>
       </div>
     </div>

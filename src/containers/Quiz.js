@@ -23,7 +23,8 @@ class Quiz extends Component {
     quizData: [],
     correctAnswer: null,
     selectedAnswer: null,
-    timer: 0
+    timer: 0,
+    timestamp: null
   };
 
   componentDidMount() {
@@ -38,6 +39,8 @@ class Quiz extends Component {
         });
         // Create data for quiz and set in state
         this.setQuestionDataState();
+        // Kick off quiz by setting the first timestamp
+        this.setNewTimeStamp();
       })
       .catch(error => {
         this.setState({
@@ -97,6 +100,27 @@ class Quiz extends Component {
     return Math.floor(Math.random() * NUMBER_OF_CHOICES);
   }
 
+  // Create a new timestamp
+  setNewTimeStamp = () => {
+    const timestamp = new Date();
+    this.setState({
+      timestamp: timestamp
+    })
+  }
+
+  // Compare two timestamps and add the elapsed time in seconds to the state timer
+  updateTimer = () => {
+    const startTime = this.state.timestamp;
+    const endTime = new Date();
+    const timer = this.state.timer;
+    const timerIncrease = ((endTime.getTime() - startTime.getTime()) / 1000).toFixed(2);
+    const newTimer = (+timer + +timerIncrease).toFixed(2);
+    this.setState({
+      timer: newTimer
+    })
+
+  }
+
   // State updates to progress to next question
   continueClickedHandler = () => {
     const prevProgress = this.state.progress;
@@ -115,11 +139,15 @@ class Quiz extends Component {
       this.setState({
         isComplete: true
       })
+    } else {
+      this.setNewTimeStamp();
     }
   }
 
-  // Set isLocked in state
+  // Set isLocked in state and update timer in state
   setLockedStatusHandler = (val) => {
+    this.updateTimer();
+
     this.setState({
       isLocked: val
     })
@@ -161,7 +189,7 @@ class Quiz extends Component {
         <Results
           score={this.state.score}
           scoreMax={NUMBER_OF_QUESTIONS}
-          averageTime={(this.state.timer / 1000 / NUMBER_OF_QUESTIONS)} />
+          averageTime={(this.state.timer / NUMBER_OF_QUESTIONS).toFixed(2)} />
       );
     } else {
 

@@ -22,7 +22,8 @@ class Quiz extends Component {
     items: [],
     quizData: [],
     correctAnswer: null,
-    selectedAnswer: null
+    selectedAnswer: null,
+    timer: 0
   };
 
   componentDidMount() {
@@ -159,7 +160,8 @@ class Quiz extends Component {
       quizDisplay = (
         <Results
           score={this.state.score}
-          scoreMax={NUMBER_OF_QUESTIONS} />
+          scoreMax={NUMBER_OF_QUESTIONS}
+          averageTime={(this.state.timer / 1000 / NUMBER_OF_QUESTIONS)} />
       );
     } else {
 
